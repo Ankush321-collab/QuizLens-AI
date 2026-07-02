@@ -1,1 +1,451 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+/* ============================================================
+   THEMING ENGINE — CSS Custom Properties
+   ============================================================ */
+@layer base {
+  :root {
+    /* Core Layout Colors */
+    --background: 240 10% 4%;
+    --card: 240 10% 6%;
+    --surface: 240 10% 8%;
+    --surface-2: 240 10% 12%;
+
+    /* Borders */
+    --border: 240 8% 16%;
+
+    /* Typography */
+    --foreground: 0 0% 98%;
+    --muted-foreground: 240 5% 60%;
+
+    /* Brand Color — Cyan */
+    --primary: 190 90% 50%;
+    --primary-foreground: 240 10% 4%;
+
+    /* State Colors */
+    --state-running: 190 90% 50%;
+    --state-succeed: 142 70% 45%;
+    --state-failed: 348 83% 47%;
+    --state-submitted: 48 96% 53%;
+
+    /* Gradient palette for animated borders */
+    --grad-1: #06b6d4;   /* cyan */
+    --grad-2: #818cf8;   /* indigo */
+    --grad-3: #e879f9;   /* fuchsia */
+    --grad-4: #34d399;   /* emerald */
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--surface));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
+  }
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+/* Monospace font helper */
+.mono {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+}
+
+/* Glowing drop shadow using primary color */
+.custom-shadow {
+  box-shadow:
+    0 0 0 1px hsl(var(--border)),
+    0 20px 60px -25px color-mix(in oklab, hsl(var(--primary)) 50%, transparent);
+}
+
+.custom-shadow-sm {
+  box-shadow:
+    0 0 0 1px hsl(var(--border)),
+    0 8px 30px -10px color-mix(in oklab, hsl(var(--primary)) 40%, transparent);
+}
+
+/* ============================================================
+   ANIMATED GRADIENT BORDER
+   ============================================================ */
+
+@keyframes gradient-spin {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes gradient-rotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px 0px hsl(var(--primary) / 0.4); }
+  50%       { box-shadow: 0 0 20px 4px hsl(var(--primary) / 0.7); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* Gradient border wrapper */
+.gradient-border {
+  position: relative;
+  border-radius: 14px;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 15px;
+  background: linear-gradient(
+    135deg,
+    var(--grad-1),
+    var(--grad-2),
+    var(--grad-3),
+    var(--grad-4),
+    var(--grad-1)
+  );
+  background-size: 300% 300%;
+  animation: gradient-spin 4s ease infinite;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.gradient-border:hover::before,
+.gradient-border:focus-within::before {
+  opacity: 1;
+}
+
+.gradient-border > * {
+  position: relative;
+  z-index: 1;
+  border-radius: 13px;
+}
+
+/* Always-on gradient border variant */
+.gradient-border-always::before {
+  opacity: 0.7 !important;
+}
+
+/* ============================================================
+   CARD BASE STYLES
+   ============================================================ */
+.card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.surface {
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  border-radius: 10px;
+}
+
+.surface-2 {
+  background: hsl(var(--surface-2));
+  border-radius: 8px;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px -4px hsl(var(--primary) / 0.5);
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px -4px hsl(var(--primary) / 0.7);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: hsl(var(--surface-2));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: hsl(var(--surface));
+  border-color: hsl(var(--primary) / 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: hsl(var(--surface-2));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--primary) / 0.4);
+}
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge {
+  font-family: "JetBrains Mono", monospace;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: hsl(var(--surface-2));
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+.badge-primary {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.badge-success {
+  background: hsl(var(--state-succeed) / 0.1);
+  color: hsl(var(--state-succeed));
+  border-color: hsl(var(--state-succeed) / 0.3);
+}
+
+/* ============================================================
+   TERMINAL / LOG VIEWER
+   ============================================================ */
+.terminal-window {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--surface) / 0.8);
+  padding: 0.65rem 1rem;
+  flex-shrink: 0;
+}
+
+.terminal-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminal-body {
+  font-family: "JetBrains Mono", monospace;
+  flex: 1;
+  overflow: auto;
+  background: hsl(var(--background));
+  padding: 1rem;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-label {
+  font-family: "JetBrains Mono", monospace;
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 0.4rem;
+}
+
+/* Drop zone */
+.drop-zone {
+  border: 1.5px dashed hsl(var(--border));
+  border-radius: 10px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  outline: none;
+}
+
+.drop-zone:hover,
+.drop-zone:focus {
+  border-color: hsl(var(--primary) / 0.6);
+  background: hsl(var(--primary) / 0.04);
+  box-shadow: inset 0 0 20px -10px hsl(var(--primary) / 0.15);
+}
+
+.drop-zone.has-image {
+  border-color: hsl(var(--primary) / 0.4);
+  background: hsl(var(--primary) / 0.03);
+}
+
+/* ============================================================
+   HISTORY ITEMS
+   ============================================================ */
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 9px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--surface));
+  transition: all 0.2s ease;
+  gap: 0.75rem;
+}
+
+.history-item:hover {
+  border-color: hsl(var(--primary) / 0.5);
+  background: hsl(var(--surface-2));
+  transform: translateX(3px);
+  box-shadow: 0 4px 20px -8px hsl(var(--primary) / 0.3);
+}
+
+/* ============================================================
+   QUESTION CARDS
+   ============================================================ */
+.question-card {
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--surface));
+  transition: border-color 0.2s ease;
+}
+
+.question-card:hover {
+  border-color: hsl(var(--primary) / 0.4);
+}
+
+/* ============================================================
+   GRADIENT TEXT
+   ============================================================ */
+.gradient-text {
+  background: linear-gradient(135deg, var(--grad-1), var(--grad-2), var(--grad-3));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* ============================================================
+   LOADING SPINNER
+   ============================================================ */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid hsl(var(--primary) / 0.2);
+  border-top-color: hsl(var(--primary));
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Animate-in utility */
+.animate-in {
+  animation: fadeInUp 0.45s ease both;
+}

@@ -3,6 +3,7 @@
 > **Intelligent MCQ Extraction & AI-Powered Solutions**
 
 A modern full-stack application that extracts multiple-choice questions from screenshots and provides AI-generated answers using Google's Gemini AI. Built with Spring Boot and React.
+![alt text](image-1.png)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-17+-red.svg)](https://www.java.com/)
